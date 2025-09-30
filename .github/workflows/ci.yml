@@ -20,7 +20,7 @@ jobs:
 
       - name: Run Go Tests
         run: go test -cover ./...
-        
+
   style:
     name: Style
     runs-on: ubuntu-latest
@@ -36,3 +36,6 @@ jobs:
 
       - name: Run Formatting Check
         run: test -z $(go fmt ./...)
+
+      - name: Run Linting Check
+        uses: dominikh/staticcheck-action@v1
