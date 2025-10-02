@@ -6,6 +6,11 @@ on:
 
 jobs:
   tests:
+    # Add "id-token" with the intended permissions.
+    permissions:
+      contents: 'read'
+      id-token: 'write'
+
     name: Deploy
     runs-on: ubuntu-latest
 
@@ -16,7 +21,23 @@ jobs:
       - name: Set up Go
         uses: actions/setup-go@v5
         with:
-          go-version: "1.25.1"
+          go-version: "1.22.x"
+
+      - id: 'auth'
+        uses: 'google-github-actions/auth@v2'
+        with:
+          credentials_json: '${{ secrets.GCP_CREDENTIALS }}'
 
       - name: Run buildprod script
         run: scripts/buildprod.sh
+
+      - name: 'Set up Cloud SDK'
+        uses: 'google-github-actions/setup-gcloud@v3'
+        with:
+          version: '>= 363.0.0'
+
+      - name: 'Use gcloud CLI'
+        run: 'gcloud info' 
+
+      - name: 'Gcloud build'
+        run: gcloud builds submit --tag us-central1-docker.pkg.dev/notely-473900/notely-ar-repo/notely:v1 .
